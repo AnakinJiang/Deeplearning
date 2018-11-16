@@ -15,12 +15,12 @@ sudo apt-get remove --purge nvidia-driver-390
 如果是安装的是官万下载的驱动，则重新运行run文件来卸载
 
 ```
-sh ./nvidia.run --uninstall
+sudo sh nvidia.run --uninstall
 ```
 
 此时，显卡驱动现实如下：
 
-​![](images/tensorflow/detail.png)
+![](images/tensorflow/detail.png)
 
 ## 1.2、下载显卡驱动
 
