@@ -1,5 +1,3 @@
-[TOC]
-
 # Ubuntu18.04+Python3.6+GTX1080ti配置cuda9.0+ cudnn7.3.1+tensorflow1.11GPU版本
 
 # 1、安装显卡驱动
