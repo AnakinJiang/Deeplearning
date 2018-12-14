@@ -1,5 +1,15 @@
 # Ubuntu18.04+Python3.6+GTX1080ti配置cuda9.0+ cudnn7.3.1+tensorflow1.11GPU版本
 
+# 预备工作
+
+验证电脑是否支持CUDA的GPU
+
+验证自己的Linux版本是否支持 CUDA
+
+验证是否安装gcc
+
+验证是否安装kernel header 和package development
+
 # 1、安装显卡驱动
 
 ## 1.1、卸载旧版显卡驱动
@@ -30,7 +40,14 @@ sudo sh nvidia.run --uninstall
 
 ## 1.3、禁用自带显卡驱动
 
-打开黑名单列表`sudo gedit /etc/modprobe.d/blacklist.conf`，在列表最后加入一行`blacklist nouveau`保存后输入 `sudo update-initramfs -u`更新更改
+打开黑名单列表`sudo gedit /etc/modprobe.d/blacklist.conf`，在列表最后加入
+
+```
+blacklist nouveau
+options nouveau modeset=0
+```
+
+保存后输入 `sudo update-initramfs -u`更新更改
 
 停止X-windows服务，输入`sudo service lightdm stop`
 
@@ -101,13 +118,26 @@ Installing the CUDA Toolkit in /usr/local/cuda-9.0 ... 等待安装完成即可
 
 ![](images/tensorflow/cudaFinish.png)
 
-提示若想要上出cuda工具，直接运行pl脚本即可，进入目录
+提示若想要删除cuda工具，直接运行pl脚本即可，进入目录
 
 ```
 sudo perl uninstall_cuda_9.2.pl
 ```
 
-最后一步，将cuda添加到环境变量，完成后，重启终端输入`nvcc -V`，显示如下则表示cuda工具安装成功
+最后一步，将cuda添加到环境变量，在终端输入
+
+```
+sudo gedit ~/.bashrc
+```
+
+然后加入
+
+```
+export PATH=/usr/local/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+```
+
+完成后，重启终端输入`nvcc -V`，显示如下则表示cuda工具安装成功
 
 ![](images/tensorflow/cudaTool.png)
 
@@ -137,7 +167,21 @@ anaconda指的是一个开源的Python发行版本，其包含了conda、Python�
 sudo bash Anaconda3-5.3.0-Linux-x86_64.sh
 ```
 
-一直按回车或yes完成安装，输入python，查看是否安装成功
+一直按回车或yes完成安装，完成安装
+
+接下来配置环境变量，在终端输入
+
+```
+sudo gedit ~/.bashrc
+```
+
+然后加入
+
+```
+export PATH=~/anaconda3/bin:$PATH
+```
+
+更新配置，`source  ~/.bashrc`，输入python，查看是否安装成功
 
 ![](images/tensorflow/anaconda3Finish.png)
 
@@ -158,10 +202,47 @@ source activate tensorflow
 最后为该环境安装tensorflow-gpu
 
 ```
-sudo pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow-gpu
+pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow-gpu
 ```
 
-# 5、参考文献
+# 6、测试
+
+新建python文件，运行测试程序
+
+```python
+import tensorflow as tf
+ 
+with tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=False)) as sess:
+    a = tf.constant(1)
+    b = tf.constant(3)
+    c = a + b
+    print('结果是：%d\n 值为：%d' % (sess.run(c), sess.run(c)))
+```
+
+若输出为
+
+```
+2018-12-12 15:43:39.871883: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties:
+name: GeForce GTX 1080 Ti major: 6 minor: 1 memoryClockRate(GHz): 1.6575
+pciBusID: 0000:02:00.0
+totalMemory: 10.91GiB freeMemory: 10.00GiB
+2018-12-12 15:43:39.871896: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2018-12-12 15:43:40.042840: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2018-12-12 15:43:40.042868: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0
+2018-12-12 15:43:40.042873: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N
+2018-12-12 15:43:40.043042: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 9665 MB memory) -> physical GPU (device: 0, name: GeForce GTX 1080 Ti, pci bus id: 0000:02:00.0, compute capability: 6.1)
+结果是：4
+ 值为：4
+```
+
+则安装成功，其中
+
+```
+allow_soft_placement=True 表示使用不能使用显卡时使用cpu
+log_device_placement=False 不打印日志，不然会刷屏 
+```
+
+# 7、参考文献
 
 1. [TensorFlow安装指南](https://www.tensorflow.org/install/install_linux)
 2. 
