@@ -40,3 +40,37 @@ torch.mv(a,b) #乘法，严格要求矩阵乘向量
 
 # 4、
 
+# 版本的坑
+
+**报错**
+
+```
+UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number  
+  train_loss += loss.data[0]  
+```
+
+解决方案
+
+```python
+#原语句：  
+train_loss+=loss.data[0]  
+#修改后：  
+train_loss+=loss.item() 
+```
+
+**报错**
+
+```
+UserWarning: volatile was removed and now has no effect. Use `with torch.no_grad():` instead.  
+  label = Variable(label.cuda(), volatile=True)  
+```
+
+解决方案
+
+```python
+#原语句  
+label = Variable(label.cuda(), volatile=True)  
+#修改后语句  
+label = Variable(label.cuda())  
+```
+

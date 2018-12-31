@@ -1,2 +1,2 @@
 # Deeplearning
-MACHINE_LEARNING、DEEP_LEARNING学习笔记，前几篇介绍机器学习与深度学习的基础知识，后面几章分别介绍机器学习与深度学习的内容。
+DEEP_LEARNING学习笔记
